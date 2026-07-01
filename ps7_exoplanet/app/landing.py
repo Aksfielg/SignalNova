@@ -12,7 +12,7 @@ def render_landing():
 *{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
 body{background:#000;color:#fff;font-family:'Inter',sans-serif;overflow-x:hidden;}
-section{min-height:100vh;display:flex;flex-direction:column;align-items:center;
+section{min-height:650px;display:flex;flex-direction:column;align-items:center;
   justify-content:center;padding:60px 40px;position:relative;text-align:center;}
 
 /* STARS */
@@ -421,7 +421,7 @@ window.addEventListener('resize',()=>{
 
     try:
         import streamlit.components.v1 as components
-        components.html(html_content, height=3200, scrolling=True)
+        components.html(html_content, height=3400, scrolling=False)
     except Exception:
         st.markdown(html_content, unsafe_allow_html=True)
 
