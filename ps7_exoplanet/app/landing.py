@@ -131,6 +131,72 @@ section{min-height:650px;display:flex;flex-direction:column;align-items:center;
   10%{opacity:0.6;}
   90%{opacity:0.6;}
   100%{transform:translateY(-100px) translateX(var(--drift));opacity:0;}}
+/* 3D Orbit Animation */
+.orbit-container {
+  width: 350px;
+  height: 350px;
+  perspective: 1200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.star-system {
+  position: relative;
+  transform-style: preserve-3d;
+  transform: rotateX(75deg);
+}
+.orbit-ring {
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  border: 2px dashed rgba(100, 150, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+.star-sphere {
+  width: 120px;
+  height: 120px;
+  background: radial-gradient(circle at 30% 30%, #ffffff 0%, #ffcc00 30%, #ff6600 70%, #aa2200 100%);
+  border-radius: 50%;
+  position: absolute;
+  transform: translate(-50%, -50%) rotateX(-75deg);
+  box-shadow: 0 0 60px rgba(255,136,0,0.6);
+}
+.planet-pivot {
+  position: absolute;
+  transform-style: preserve-3d;
+  animation: pivot 4s linear infinite;
+}
+.planet-translate {
+  transform: translateX(160px);
+  transform-style: preserve-3d;
+}
+.planet-anti-pivot {
+  transform-style: preserve-3d;
+  animation: anti-pivot 4s linear infinite;
+}
+.planet-sphere {
+  width: 24px;
+  height: 24px;
+  background: radial-gradient(circle at 30% 30%, #a8c5ff 0%, #4466ff 50%, #001144 100%);
+  border-radius: 50%;
+  position: absolute;
+  transform: translate(-50%, -50%) rotateX(-75deg);
+  box-shadow: inset -4px -4px 8px rgba(0,0,0,0.7);
+}
+@keyframes pivot {
+  0%   { transform: rotateZ(-207.391deg); }
+  100% { transform: rotateZ(1044.782deg); }
+}
+@keyframes anti-pivot {
+  0%   { transform: rotateZ(207.391deg); }
+  100% { transform: rotateZ(-1044.782deg); }
+}
+@media (max-width: 900px) {
+  .transit-container { flex-direction: column; text-align: center; }
+  .transit-container > div { text-align: center !important; }
+  .section-title, .section-desc { text-align: center !important; margin: 0 auto 20px auto; }
+}
 </style>
 </head>
 <body>"""
@@ -156,52 +222,76 @@ section{min-height:650px;display:flex;flex-direction:column;align-items:center;
 
 <!-- SECTION 2: TRANSIT PHENOMENON -->
 <section class="transit-section">
-  <div style="position:relative;z-index:1;width:100%">
-    <div class="section-title">The Transit Phenomenon</div>
-    <div class="section-desc">
-      When a distant world crosses in front of its host star, it blocks a microscopic
-      fraction of light. Our mission is to extract these incredibly faint periodic
-      signatures from the intense chaos of stellar noise.
+  <div class="transit-container" style="display:flex; align-items:center; gap:40px; max-width:1200px; width:100%; margin:0 auto; position:relative; z-index:1;">
+    
+    <!-- LEFT COLUMN -->
+    <div style="flex:1.2; text-align:left;">
+      <div class="section-title" style="text-align:left;">The Transit Phenomenon</div>
+      <div class="section-desc" style="text-align:left; max-width:100%;">
+        When a distant world crosses in front of its host star, it blocks a microscopic
+        fraction of light. Our mission is to extract these incredibly faint periodic
+        signatures from the intense chaos of stellar noise.
+      </div>
+      <div class="lc-wrapper" style="margin:0; width:100%; max-width:650px;">
+        <div class="lc-scan"></div>
+        <svg class="lc-svg" viewBox="0 0 800 200">
+          <defs>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="3" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#334466"/>
+            </marker>
+          </defs>
+          <!-- Grid lines -->
+          <line x1="0" y1="60" x2="800" y2="60" stroke="rgba(60,100,200,0.15)" stroke-width="1" stroke-dasharray="4"/>
+          <line x1="0" y1="100" x2="800" y2="100" stroke="rgba(60,100,200,0.2)" stroke-width="1" stroke-dasharray="4"/>
+          <line x1="0" y1="140" x2="800" y2="140" stroke="rgba(60,100,200,0.15)" stroke-width="1" stroke-dasharray="4"/>
+          <!-- Light curve path with 3 transits -->
+          <path d="M0,100 C20,100 30,98 50,100 C70,102 90,99 110,100 
+                   C130,101 145,100 155,100 C165,100 170,112 178,130 
+                   C183,140 186,145 190,145 C194,145 197,140 202,130 
+                   C210,112 215,100 225,100 C240,100 260,101 280,100
+                   C300,99 320,100 340,100 C360,101 375,100 385,100
+                   C395,100 400,112 408,130 C413,140 416,145 420,145
+                   C424,145 427,140 432,130 C440,112 445,100 455,100
+                   C470,100 490,99 510,100 C530,101 560,100 580,100
+                   C600,100 620,101 640,100 C645,100 650,112 658,130 
+                   C663,140 666,145 670,145 C674,145 677,140 682,130 
+                   C690,112 695,100 705,100 C720,100 740,100 800,100"
+                fill="none" stroke="#4488ff" stroke-width="2.5" filter="url(#glow)"/>
+          <!-- Transit markers -->
+          <circle cx="190" cy="145" r="5" fill="#facc15" class="transit-point"/>
+          <circle cx="420" cy="145" r="5" fill="#facc15" class="transit-point" style="animation-delay:0.5s"/>
+          <circle cx="650" cy="145" r="5" fill="#facc15" class="transit-point" style="animation-delay:1.0s"/>
+          <!-- Labels -->
+          <text x="190" y="170" fill="#facc15" font-size="10" text-anchor="middle" font-family="monospace">T₁</text>
+          <text x="420" y="170" fill="#facc15" font-size="10" text-anchor="middle" font-family="monospace">T₂</text>
+          <text x="650" y="170" fill="#facc15" font-size="10" text-anchor="middle" font-family="monospace">T₃</text>
+          <text x="535" y="95" fill="#6677aa" font-size="11" font-family="monospace">Period P</text>
+          <line x1="420" y1="88" x2="650" y2="88" stroke="#334466" stroke-width="1" stroke-dasharray="3" marker-end="url(#arrow)"/>
+        </svg>
+      </div>
     </div>
-    <div class="lc-wrapper" style="margin:0 auto">
-      <div class="lc-scan"></div>
-      <svg class="lc-svg" viewBox="0 0 800 200">
-        <defs>
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="3" result="blur"/>
-            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
-        </defs>
-        <!-- Grid lines -->
-        <line x1="0" y1="60" x2="800" y2="60" stroke="rgba(60,100,200,0.15)" stroke-width="1" stroke-dasharray="4"/>
-        <line x1="0" y1="100" x2="800" y2="100" stroke="rgba(60,100,200,0.2)" stroke-width="1" stroke-dasharray="4"/>
-        <line x1="0" y1="140" x2="800" y2="140" stroke="rgba(60,100,200,0.15)" stroke-width="1" stroke-dasharray="4"/>
-        <!-- Light curve path with transits -->
-        <path d="M0,100 C20,100 30,98 50,100 C70,102 90,99 110,100 
-                 C130,101 145,100 155,100 C165,100 170,112 178,130 
-                 C183,140 186,145 190,145 C194,145 197,140 202,130 
-                 C210,112 215,100 225,100 C240,100 260,101 280,100
-                 C300,99 320,100 340,100 C360,101 375,100 385,100
-                 C395,100 400,112 408,130 C413,140 416,145 420,145
-                 C424,145 427,140 432,130 C440,112 445,100 455,100
-                 C470,100 490,99 510,100 C530,101 560,100 580,100
-                 C600,100 620,101 640,100 C660,99 680,100 720,100
-                 C740,100 760,100 800,100"
-              fill="none" stroke="#4488ff" stroke-width="2.5" filter="url(#glow)"/>
-        <!-- Transit markers -->
-        <circle cx="190" cy="145" r="5" fill="#facc15" class="transit-point"/>
-        <circle cx="420" cy="145" r="5" fill="#facc15" class="transit-point" 
-                style="animation-delay:0.5s"/>
-        <!-- Labels -->
-        <text x="190" y="170" fill="#facc15" font-size="10" text-anchor="middle" 
-              font-family="monospace">T₁</text>
-        <text x="420" y="170" fill="#facc15" font-size="10" text-anchor="middle"
-              font-family="monospace">T₂</text>
-        <text x="650" y="95" fill="#6677aa" font-size="11" font-family="monospace">Period P</text>
-        <line x1="455" y1="88" x2="645" y2="88" stroke="#334466" stroke-width="1" 
-              stroke-dasharray="3" marker-end="url(#arrow)"/>
-      </svg>
+    
+    <!-- RIGHT COLUMN -->
+    <div style="flex:0.8; display:flex; justify-content:center; align-items:center;">
+       <div class="orbit-container">
+          <div class="star-system">
+             <div class="orbit-ring"></div>
+             <div class="star-sphere"></div>
+             <div class="planet-pivot">
+                 <div class="planet-translate">
+                     <div class="planet-anti-pivot">
+                         <div class="planet-sphere"></div>
+                     </div>
+                 </div>
+             </div>
+          </div>
+       </div>
     </div>
+    
   </div>
   <div class="scroll-hint">▼</div>
 </section>
