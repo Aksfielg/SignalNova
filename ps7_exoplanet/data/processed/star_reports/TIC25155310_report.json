@@ -1,0 +1,34 @@
+{
+  "star_id": "TIC 25155310",
+  "analysis_date": "2026-07-01T16:24:14.282833",
+  "transit_found": true,
+  "orbital_parameters": {
+    "period_days": 3.288695,
+    "transit_depth_ppm": 4910.19,
+    "transit_duration_hours": 2.88,
+    "transit_midpoint_btjd": 1327.521626
+  },
+  "signal_quality": {
+    "snr": 82.55,
+    "bls_power": 0.0059,
+    "lomb_scargle_period_days": 0.547818,
+    "methods_agree": false
+  },
+  "vetting_tests": {
+    "secondary_eclipse_depth_ppm": 192.02,
+    "secondary_eclipse_flag": false,
+    "odd_even_depth_ratio": 0.9508,
+    "odd_even_flag": false,
+    "dip_symmetry": 0.9966
+  },
+  "crowding_assessment": {
+    "target_magnitude": 10.61,
+    "bright_neighbors_21arcsec": 0,
+    "crowding_risk": "LOW"
+  },
+  "additional_features": {
+    "dip_area": 11.390272,
+    "autocorrelation_peak": 0.2616,
+    "fft_dominant_freq": 3.741405
+  }
+}

@@ -1,0 +1,3 @@
+Planet,TIC ID,Known period (days),Detected period (days),Error %,Status
+WASP-126 b,25155310,3.2886,3.2887,0.0029,PASS
+TOI-700 d,150428135,37.4228,8.0263,78.5524,FAIL

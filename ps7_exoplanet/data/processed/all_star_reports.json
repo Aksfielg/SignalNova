@@ -1,0 +1,172 @@
+[
+  {
+    "star_id": "TIC 150428135",
+    "analysis_date": "2026-07-01T16:24:14.281583",
+    "transit_found": true,
+    "orbital_parameters": {
+      "period_days": 14.822416,
+      "transit_depth_ppm": 2146.35,
+      "transit_duration_hours": 1.2,
+      "transit_midpoint_btjd": 1340.085495
+    },
+    "signal_quality": {
+      "snr": 7.66,
+      "bls_power": 0.0001,
+      "lomb_scargle_period_days": 3.875505,
+      "methods_agree": false
+    },
+    "vetting_tests": {
+      "secondary_eclipse_depth_ppm": 0.0,
+      "secondary_eclipse_flag": false,
+      "odd_even_depth_ratio": 1.0,
+      "odd_even_flag": false,
+      "dip_symmetry": 0.9362
+    },
+    "crowding_assessment": {
+      "target_magnitude": 10.91,
+      "bright_neighbors_21arcsec": 0,
+      "crowding_risk": "LOW"
+    },
+    "additional_features": {
+      "dip_area": 12.04678,
+      "autocorrelation_peak": 0.0286,
+      "fft_dominant_freq": 117.444203
+    }
+  },
+  {
+    "star_id": "TIC 25155310",
+    "analysis_date": "2026-07-01T16:24:14.282833",
+    "transit_found": true,
+    "orbital_parameters": {
+      "period_days": 3.288695,
+      "transit_depth_ppm": 4910.19,
+      "transit_duration_hours": 2.88,
+      "transit_midpoint_btjd": 1327.521626
+    },
+    "signal_quality": {
+      "snr": 82.55,
+      "bls_power": 0.0059,
+      "lomb_scargle_period_days": 0.547818,
+      "methods_agree": false
+    },
+    "vetting_tests": {
+      "secondary_eclipse_depth_ppm": 192.02,
+      "secondary_eclipse_flag": false,
+      "odd_even_depth_ratio": 0.9508,
+      "odd_even_flag": false,
+      "dip_symmetry": 0.9966
+    },
+    "crowding_assessment": {
+      "target_magnitude": 10.61,
+      "bright_neighbors_21arcsec": 0,
+      "crowding_risk": "LOW"
+    },
+    "additional_features": {
+      "dip_area": 11.390272,
+      "autocorrelation_peak": 0.2616,
+      "fft_dominant_freq": 3.741405
+    }
+  },
+  {
+    "star_id": "TIC 261136679",
+    "analysis_date": "2026-07-01T16:24:14.283964",
+    "transit_found": true,
+    "orbital_parameters": {
+      "period_days": 6.268523,
+      "transit_depth_ppm": 181.35,
+      "transit_duration_hours": 2.88,
+      "transit_midpoint_btjd": 1325.50196
+    },
+    "signal_quality": {
+      "snr": 30.84,
+      "bls_power": 0.0,
+      "lomb_scargle_period_days": 0.570215,
+      "methods_agree": false
+    },
+    "vetting_tests": {
+      "secondary_eclipse_depth_ppm": 1.45,
+      "secondary_eclipse_flag": false,
+      "odd_even_depth_ratio": 1.0797,
+      "odd_even_flag": false,
+      "dip_symmetry": 0.9949
+    },
+    "crowding_assessment": {
+      "target_magnitude": 5.11,
+      "bright_neighbors_21arcsec": 0,
+      "crowding_risk": "LOW"
+    },
+    "additional_features": {
+      "dip_area": 0.908417,
+      "autocorrelation_peak": 0.0585,
+      "fft_dominant_freq": 5.087477
+    }
+  },
+  {
+    "star_id": "TIC 270341214",
+    "analysis_date": "2026-07-01T16:24:14.285166",
+    "transit_found": true,
+    "orbital_parameters": {
+      "period_days": 14.760696,
+      "transit_depth_ppm": 2651.96,
+      "transit_duration_hours": 1.2,
+      "transit_midpoint_btjd": 1333.277671
+    },
+    "signal_quality": {
+      "snr": 15.81,
+      "bls_power": 0.0,
+      "lomb_scargle_period_days": 1.080879,
+      "methods_agree": false
+    },
+    "vetting_tests": {
+      "secondary_eclipse_depth_ppm": 0.0,
+      "secondary_eclipse_flag": false,
+      "odd_even_depth_ratio": 2.1171,
+      "odd_even_flag": true,
+      "dip_symmetry": 1.0
+    },
+    "crowding_assessment": {
+      "target_magnitude": 8.88,
+      "bright_neighbors_21arcsec": 0,
+      "crowding_risk": "LOW"
+    },
+    "additional_features": {
+      "dip_area": 3.937331,
+      "autocorrelation_peak": 0.0264,
+      "fft_dominant_freq": 255.782085
+    }
+  },
+  {
+    "star_id": "TIC 307210830",
+    "analysis_date": "2026-07-01T16:24:14.286140",
+    "transit_found": true,
+    "orbital_parameters": {
+      "period_days": 3.690719,
+      "transit_depth_ppm": 1458.8,
+      "transit_duration_hours": 1.2,
+      "transit_midpoint_btjd": 1356.202411
+    },
+    "signal_quality": {
+      "snr": 27.62,
+      "bls_power": 0.0002,
+      "lomb_scargle_period_days": 0.924446,
+      "methods_agree": false
+    },
+    "vetting_tests": {
+      "secondary_eclipse_depth_ppm": 0.0,
+      "secondary_eclipse_flag": false,
+      "odd_even_depth_ratio": 1.1208,
+      "odd_even_flag": false,
+      "dip_symmetry": 0.9427
+    },
+    "crowding_assessment": {
+      "target_magnitude": 9.41,
+      "bright_neighbors_21arcsec": 0,
+      "crowding_risk": "LOW"
+    },
+    "additional_features": {
+      "dip_area": 5.596819,
+      "autocorrelation_peak": 0.0488,
+      "fft_dominant_freq": 5.853972
+    }
+  }
+]
