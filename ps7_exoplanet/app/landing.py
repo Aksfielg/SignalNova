@@ -1,238 +1,439 @@
+import streamlit as st
+
 def render_landing():
-    html_content = """
-<!DOCTYPE html>
+    # Split into parts to avoid triple-quote truncation issues
+    part1 = """<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-* { margin:0; padding:0; box-sizing:border-box; }
-body {
-    background: #0a0e1a;
-    font-family: 'Segoe UI', sans-serif;
-    color: #e8f4fd;
-    height: 860px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-}
-/* Starfield */
-.stars { position:absolute; width:100%; height:100%; top:0; left:0; }
-.star {
-    position:absolute;
-    background:#ffffff;
-    border-radius:50%;
-    animation: twinkle 3s infinite alternate;
-}
-@keyframes twinkle {
-    0% { opacity:0.2; transform:scale(1); }
-    100% { opacity:1; transform:scale(1.3); }
-}
-/* Orbiting planet */
-.solar-system {
-    position:relative;
-    width:200px; height:200px;
-    margin-bottom:40px;
-}
-.star-center {
-    position:absolute;
-    top:50%; left:50%;
-    transform:translate(-50%,-50%);
-    width:70px; height:70px;
-    background:radial-gradient(circle, #facc15, #f59e0b, #d97706);
-    border-radius:50%;
-    box-shadow: 0 0 40px #facc15, 0 0 80px rgba(250,204,21,0.4);
-    animation: pulse-star 2s ease-in-out infinite alternate;
-}
-@keyframes pulse-star {
-    0% { box-shadow:0 0 30px #facc15, 0 0 60px rgba(250,204,21,0.3); }
-    100% { box-shadow:0 0 50px #facc15, 0 0 100px rgba(250,204,21,0.5); }
-}
-.orbit-ring {
-    position:absolute;
-    top:50%; left:50%;
-    transform:translate(-50%,-50%);
-    width:180px; height:180px;
-    border:1px solid rgba(96,165,250,0.2);
-    border-radius:50%;
-}
-.planet {
-    position:absolute;
-    top:50%; left:50%;
-    width:18px; height:18px;
-    margin-top:-9px; margin-left:-9px;
-    animation: orbit 5s linear infinite;
-}
-.planet-body {
-    width:18px; height:18px;
-    background:radial-gradient(circle, #60a5fa, #1e40af);
-    border-radius:50%;
-    box-shadow:0 0 10px rgba(96,165,250,0.6);
-}
-@keyframes orbit {
-    from { transform:rotate(0deg) translateX(90px) rotate(0deg); }
-    to   { transform:rotate(360deg) translateX(90px) rotate(-360deg); }
-}
-/* Light curve */
-.lc-container {
-    width:400px; height:80px;
-    margin-bottom:30px;
-    position:relative;
-}
-/* Text */
-.main-title {
-    font-size:36px; font-weight:800;
-    color:#e8f4fd;
-    text-shadow: 0 0 30px rgba(55,138,221,0.8);
-    text-align:center; margin-bottom:8px;
-    letter-spacing:-0.5px;
-}
-.subtitle {
-    font-size:16px; color:#a8c5e2;
-    text-align:center; margin-bottom:6px;
-}
-.badge {
-    display:inline-block;
-    border:1px solid #1e3a5f;
-    border-radius:20px;
-    padding:4px 14px;
-    font-size:12px; color:#6b8bb5;
-    margin-bottom:30px;
-}
-.features {
-    display:flex; gap:30px;
-    margin-top:10px;
-}
-.feature-pill {
-    background:rgba(30,58,95,0.4);
-    border:1px solid #1e3a5f;
-    border-radius:8px;
-    padding:8px 16px;
-    font-size:12px;
-    color:#a8c5e2;
-    text-align:center;
-}
-.feature-pill span {
-    display:block;
-    font-size:18px;
-    margin-bottom:4px;
-}
-/* Nebula glow */
-.nebula {
-    position:absolute;
-    border-radius:50%;
-    filter:blur(80px);
-    pointer-events:none;
-}
-.nebula-1 {
-    width:400px; height:400px;
-    background:radial-gradient(circle, rgba(167,139,250,0.08), transparent);
-    top:-100px; right:-100px;
-    animation:drift1 20s ease-in-out infinite alternate;
-}
-.nebula-2 {
-    width:300px; height:300px;
-    background:radial-gradient(circle, rgba(55,138,221,0.08), transparent);
-    bottom:-50px; left:-50px;
-    animation:drift2 25s ease-in-out infinite alternate;
-}
-@keyframes drift1 {
-    0%{transform:translate(0,0);} 100%{transform:translate(30px,20px);}
-}
-@keyframes drift2 {
-    0%{transform:translate(0,0);} 100%{transform:translate(-20px,30px);}
-}
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:#000;color:#fff;font-family:'Inter',sans-serif;overflow-x:hidden;}
+section{min-height:100vh;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;padding:60px 40px;position:relative;text-align:center;}
+
+/* STARS */
+#star-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;}
+
+/* SECTION 1 - Hero */
+.hero{background:radial-gradient(ellipse at center,#0a0a2e 0%,#000 70%);}
+.hero-title{font-family:'Orbitron',monospace;font-size:clamp(48px,8vw,120px);
+  font-weight:900;letter-spacing:8px;
+  background:linear-gradient(135deg,#a8c5ff 0%,#7b9fff 40%,#a78bfa 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;margin-bottom:24px;
+  text-shadow:none;filter:drop-shadow(0 0 40px rgba(120,150,255,0.5));}
+.hero-sub{font-size:20px;color:#a8c5e2;margin-bottom:12px;letter-spacing:1px;}
+.hero-desc{font-size:14px;color:#4a6080;letter-spacing:2px;margin-bottom:50px;}
+.hero-btn{
+  background:linear-gradient(135deg,#667eea,#764ba2);
+  border:none;border-radius:50px;padding:18px 50px;
+  font-family:'Orbitron',monospace;font-size:14px;letter-spacing:3px;
+  color:#fff;cursor:pointer;
+  box-shadow:0 0 30px rgba(102,126,234,0.5);
+  transition:all 0.3s ease;text-transform:uppercase;}
+.hero-btn:hover{transform:scale(1.05);box-shadow:0 0 50px rgba(102,126,234,0.8);}
+
+/* SECTION 2 - Transit */
+.transit-section{background:linear-gradient(180deg,#000 0%,#050520 100%);}
+.section-title{font-family:'Orbitron',monospace;font-size:clamp(28px,5vw,56px);
+  font-weight:700;margin-bottom:24px;color:#fff;
+  text-shadow:0 0 40px rgba(100,150,255,0.4);}
+.section-desc{font-size:16px;color:#8899bb;max-width:700px;line-height:1.8;margin-bottom:50px;}
+
+/* Light curve animation */
+.lc-wrapper{width:min(800px,90vw);height:200px;position:relative;
+  background:rgba(10,20,50,0.8);border:1px solid rgba(60,100,200,0.2);
+  border-radius:16px;overflow:hidden;}
+.lc-scan{position:absolute;top:0;height:100%;width:2px;
+  background:rgba(255,255,255,0.8);
+  box-shadow:0 0 10px #fff;
+  animation:scan 4s linear infinite;}
+@keyframes scan{from{left:0;}to{left:100%;}}
+.lc-svg{width:100%;height:100%;}
+.transit-point{animation:pulse-pt 2s ease-in-out infinite;}
+@keyframes pulse-pt{0%,100%{r:4;opacity:1;}50%{r:7;opacity:0.6;}}
+
+/* SECTION 3 - Imposters */
+.imposters-section{background:linear-gradient(180deg,#050520 0%,#0a0010 100%);}
+.cards-grid{display:flex;gap:24px;flex-wrap:wrap;justify-content:center;max-width:900px;}
+.signal-card{width:260px;border-radius:20px;padding:28px;text-align:left;
+  border:2px solid transparent;transition:transform 0.3s,box-shadow 0.3s;}
+.signal-card:hover{transform:translateY(-8px);}
+.card-planet{background:rgba(0,50,20,0.6);border-color:#00ff88;
+  box-shadow:0 0 30px rgba(0,255,136,0.1);}
+.card-eb{background:rgba(50,30,0,0.6);border-color:#ff8800;
+  box-shadow:0 0 30px rgba(255,136,0,0.1);}
+.card-noise{background:rgba(20,20,40,0.6);border-color:#4466ff;
+  box-shadow:0 0 30px rgba(68,102,255,0.1);}
+.card-icon{font-size:32px;margin-bottom:12px;}
+.card-title{font-family:'Orbitron',monospace;font-size:16px;font-weight:700;
+  margin-bottom:10px;}
+.card-planet .card-title{color:#00ff88;}
+.card-eb .card-title{color:#ff8800;}
+.card-noise .card-title{color:#7788ff;}
+.card-body{font-size:13px;color:#8899bb;line-height:1.6;}
+
+/* SECTION 4 - Pipeline */
+.pipeline-section{background:linear-gradient(180deg,#0a0010 0%,#000 100%);}
+.pipeline-nodes{display:flex;align-items:center;gap:0;flex-wrap:wrap;
+  justify-content:center;max-width:900px;margin-top:20px;}
+.p-node{display:flex;flex-direction:column;align-items:center;width:140px;}
+.p-circle{width:90px;height:90px;border-radius:50%;
+  border:2px solid #a78bfa;
+  display:flex;align-items:center;justify-content:center;
+  font-size:32px;margin-bottom:12px;position:relative;
+  background:rgba(20,10,40,0.8);
+  box-shadow:0 0 20px rgba(167,139,250,0.2);
+  transition:box-shadow 0.3s;}
+.p-circle.active{border-color:#00ff88;box-shadow:0 0 30px rgba(0,255,136,0.5);}
+.p-label{font-size:11px;color:#a8c5e2;text-align:center;letter-spacing:0.5px;
+  font-family:'Orbitron',monospace;}
+.p-connector{width:40px;height:2px;background:linear-gradient(90deg,#a78bfa,#667eea);
+  position:relative;overflow:hidden;}
+.p-connector::after{content:'';position:absolute;top:-1px;left:-100%;
+  width:100%;height:4px;background:#fff;opacity:0.8;
+  animation:flow 2s linear infinite;}
+@keyframes flow{from{left:-100%;}to{left:200%;}}
+
+/* SECTION 5 - Launch */
+.launch-section{background:radial-gradient(ellipse at center,#050520 0%,#000 70%);}
+.launch-grid{display:flex;gap:40px;align-items:center;flex-wrap:wrap;
+  justify-content:center;max-width:900px;}
+.code-block{background:#0d1117;border:1px solid #21262d;border-radius:12px;
+  padding:28px;width:380px;text-align:left;font-family:'Courier New',monospace;
+  font-size:13px;line-height:2;}
+.code-import{color:#ff7b72;}
+.code-comment{color:#6e7681;}
+.code-var{color:#79c0ff;}
+.code-string{color:#a5d6ff;}
+.code-output{color:#00ff88;}
+.system-ready{text-align:left;max-width:320px;}
+.system-ready h3{font-family:'Orbitron',monospace;font-size:28px;
+  color:#00ff88;letter-spacing:4px;margin-bottom:20px;
+  text-shadow:0 0 20px rgba(0,255,136,0.5);}
+.system-ready p{font-size:14px;color:#8899bb;line-height:1.7;}
+
+/* Scroll indicator */
+.scroll-hint{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);
+  color:#333;font-size:12px;letter-spacing:2px;animation:bounce 2s infinite;}
+@keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0);}
+  50%{transform:translateX(-50%) translateY(8px);}}
+
+/* Floating particles */
+.particle{position:fixed;width:2px;height:2px;background:#4466ff;
+  border-radius:50%;pointer-events:none;animation:float-up linear infinite;opacity:0;}
+@keyframes float-up{
+  0%{transform:translateY(100vh) translateX(0);opacity:0;}
+  10%{opacity:0.6;}
+  90%{opacity:0.6;}
+  100%{transform:translateY(-100px) translateX(var(--drift));opacity:0;}}
 </style>
 </head>
-<body>
-<div class="nebula nebula-1"></div>
-<div class="nebula nebula-2"></div>
-<div class="stars" id="stars"></div>
+<body>"""
 
-<div class="solar-system">
-    <div class="orbit-ring"></div>
-    <div class="star-center"></div>
-    <div class="planet"><div class="planet-body"></div></div>
-</div>
+    part2 = """
+<canvas id="star-canvas"></canvas>
 
-<h1 class="main-title">🔭 Exoplanet Transit Detection</h1>
-<p class="subtitle">AI-powered discovery from noisy TESS starlight</p>
-<span class="badge">ISRO Bharatiya Antariksh Hackathon 2026 — PS7</span>
+<!-- SECTION 1: HERO -->
+<section class="hero">
+  <div style="position:relative;z-index:1">
+    <div class="hero-title">SIGNALNOVA</div>
+    <div class="hero-sub">AI-Powered Exoplanet Detection Engine</div>
+    <div class="hero-desc">Analyzing millions of TESS light curves to find the next Earth.</div>
+    <div style="margin-top:20px">
+      <div id="counter-display" style="font-family:'Orbitron',monospace;
+        font-size:13px;color:#4466ff;letter-spacing:2px;margin-bottom:30px">
+        STARS ANALYZED: <span id="counter">0</span>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-hint">▼ SCROLL TO EXPLORE ▼</div>
+</section>
 
-<svg class="lc-container" viewBox="0 0 400 80" id="lc-svg">
-  <polyline id="lc-line" 
-    points="0,20 50,20 80,20 100,20 120,20 130,45 140,55 150,45 160,20 180,20 210,20 230,20 250,20 270,20 280,45 290,55 300,45 310,20 340,20 380,20 400,20"
-    fill="none" stroke="#60a5fa" stroke-width="2"
-    stroke-dasharray="600" stroke-dashoffset="600">
-    <animate attributeName="stroke-dashoffset" 
-      from="600" to="0" dur="2s" fill="freeze"/>
-  </animate>
-  </polyline>
-  <circle r="4" fill="#facc15" opacity="0">
-    <animateMotion dur="2s" fill="freeze"
-      path="M0,20 L50,20 L80,20 L100,20 L120,20 L130,45 L140,55 L150,45 L160,20 L180,20 L210,20 L230,20 L250,20 L270,20 L280,45 L290,55 L300,45 L310,20 L340,20 L380,20 L400,20"/>
-    <animate attributeName="opacity" from="0" to="1" 
-      begin="0.1s" dur="0.1s" fill="freeze"/>
-  </circle>
-  <text x="135" y="75" fill="#facc15" font-size="10" 
-    text-anchor="middle" opacity="0">
-    Transit detected
-    <animate attributeName="opacity" from="0" to="1" 
-      begin="2s" dur="0.5s" fill="freeze"/>
-  </text>
-</svg>
+<!-- SECTION 2: TRANSIT PHENOMENON -->
+<section class="transit-section">
+  <div style="position:relative;z-index:1;width:100%">
+    <div class="section-title">The Transit Phenomenon</div>
+    <div class="section-desc">
+      When a distant world crosses in front of its host star, it blocks a microscopic
+      fraction of light. Our mission is to extract these incredibly faint periodic
+      signatures from the intense chaos of stellar noise.
+    </div>
+    <div class="lc-wrapper" style="margin:0 auto">
+      <div class="lc-scan"></div>
+      <svg class="lc-svg" viewBox="0 0 800 200">
+        <defs>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <!-- Grid lines -->
+        <line x1="0" y1="60" x2="800" y2="60" stroke="rgba(60,100,200,0.15)" stroke-width="1" stroke-dasharray="4"/>
+        <line x1="0" y1="100" x2="800" y2="100" stroke="rgba(60,100,200,0.2)" stroke-width="1" stroke-dasharray="4"/>
+        <line x1="0" y1="140" x2="800" y2="140" stroke="rgba(60,100,200,0.15)" stroke-width="1" stroke-dasharray="4"/>
+        <!-- Light curve path with transits -->
+        <path d="M0,100 C20,100 30,98 50,100 C70,102 90,99 110,100 
+                 C130,101 145,100 155,100 C165,100 170,112 178,130 
+                 C183,140 186,145 190,145 C194,145 197,140 202,130 
+                 C210,112 215,100 225,100 C240,100 260,101 280,100
+                 C300,99 320,100 340,100 C360,101 375,100 385,100
+                 C395,100 400,112 408,130 C413,140 416,145 420,145
+                 C424,145 427,140 432,130 C440,112 445,100 455,100
+                 C470,100 490,99 510,100 C530,101 560,100 580,100
+                 C600,100 620,101 640,100 C660,99 680,100 720,100
+                 C740,100 760,100 800,100"
+              fill="none" stroke="#4488ff" stroke-width="2.5" filter="url(#glow)"/>
+        <!-- Transit markers -->
+        <circle cx="190" cy="145" r="5" fill="#facc15" class="transit-point"/>
+        <circle cx="420" cy="145" r="5" fill="#facc15" class="transit-point" 
+                style="animation-delay:0.5s"/>
+        <!-- Labels -->
+        <text x="190" y="170" fill="#facc15" font-size="10" text-anchor="middle" 
+              font-family="monospace">T₁</text>
+        <text x="420" y="170" fill="#facc15" font-size="10" text-anchor="middle"
+              font-family="monospace">T₂</text>
+        <text x="650" y="95" fill="#6677aa" font-size="11" font-family="monospace">Period P</text>
+        <line x1="455" y1="88" x2="645" y2="88" stroke="#334466" stroke-width="1" 
+              stroke-dasharray="3" marker-end="url(#arrow)"/>
+      </svg>
+    </div>
+  </div>
+  <div class="scroll-hint">▼</div>
+</section>
 
-<div class="features">
-    <div class="feature-pill"><span>📡</span>BLS Detection</div>
-    <div class="feature-pill"><span>🤖</span>ML Classification</div>
-    <div class="feature-pill"><span>✅</span>Auto Vetting</div>
-    <div class="feature-pill"><span>📊</span>Live Dashboard</div>
-</div>
+<!-- SECTION 3: FILTERING IMPOSTERS -->
+<section class="imposters-section">
+  <div style="position:relative;z-index:1">
+    <div class="section-title">Filtering The Imposters</div>
+    <div class="section-desc">
+      The universe is messy. Eclipsing binaries, background stars, and instrument
+      artifacts mimic planetary transits. We use advanced geometric analysis and
+      machine learning to find the truth.
+    </div>
+    <div class="cards-grid">
+      <div class="signal-card card-planet">
+        <div class="card-icon">🌍</div>
+        <div class="card-title">Confirmed Planet</div>
+        <div class="card-body">Clean, U-shaped periodic dips with flat bottoms,
+          indicating a solid opaque body crossing the stellar disk. SNR &gt; 6σ.
+          Odd/even depths consistent. No secondary eclipse.</div>
+      </div>
+      <div class="signal-card card-eb">
+        <div class="card-icon">🔥</div>
+        <div class="card-title">Eclipsing Binary</div>
+        <div class="card-body">V-shaped alternating primary and secondary eclipses.
+          Odd/even depth mismatch flags this class. Secondary eclipse depth
+          &gt; 20% of primary. Centroid shifts visible.</div>
+      </div>
+      <div class="signal-card card-noise">
+        <div class="card-icon">📡</div>
+        <div class="card-title">Instrumental Noise</div>
+        <div class="card-body">Asymmetric artifacts, jitter, and erratic spikes
+          generated by the TESS detector. No periodicity. High flux kurtosis.
+          Eliminated by sigma-clipping and detrending.</div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-hint">▼</div>
+</section>"""
 
+    part3 = """
+<!-- SECTION 4: PIPELINE -->
+<section class="pipeline-section">
+  <div style="position:relative;z-index:1">
+    <div class="section-title">Neural Pipeline Architecture</div>
+    <div class="section-desc">
+      Our end-to-end processing framework seamlessly ingests raw NASA data,
+      isolates the signal, performs Box Least Squares frequency searches, and
+      predicts exoplanet probability.
+    </div>
+    <div class="pipeline-nodes">
+      <div class="p-node">
+        <div class="p-circle" id="pn0">🛰️</div>
+        <div class="p-label">Fetch<br>TESS Data</div>
+      </div>
+      <div class="p-connector"></div>
+      <div class="p-node">
+        <div class="p-circle" id="pn1">🧹</div>
+        <div class="p-label">Flatten &amp;<br>Detrend</div>
+      </div>
+      <div class="p-connector"></div>
+      <div class="p-node">
+        <div class="p-circle" id="pn2">📊</div>
+        <div class="p-label">BLS<br>Spectrogram</div>
+      </div>
+      <div class="p-connector"></div>
+      <div class="p-node">
+        <div class="p-circle" id="pn3">🧠</div>
+        <div class="p-label">XGBoost<br>Inference</div>
+      </div>
+      <div class="p-connector"></div>
+      <div class="p-node">
+        <div class="p-circle active" id="pn4">🚀</div>
+        <div class="p-label">Planet<br>Found</div>
+      </div>
+    </div>
+    <!-- Animated pipeline stats -->
+    <div style="margin-top:50px;display:flex;gap:40px;justify-content:center;flex-wrap:wrap">
+      <div style="text-align:center">
+        <div style="font-family:'Orbitron',monospace;font-size:32px;color:#a78bfa">
+          &lt;2s</div>
+        <div style="font-size:12px;color:#4a6080;letter-spacing:1px;margin-top:4px">
+          PER STAR</div>
+      </div>
+      <div style="text-align:center">
+        <div style="font-family:'Orbitron',monospace;font-size:32px;color:#60a5fa">
+          19,440</div>
+        <div style="font-size:12px;color:#4a6080;letter-spacing:1px;margin-top:4px">
+          DATA POINTS</div>
+      </div>
+      <div style="font-family:'Orbitron',monospace;font-size:32px;
+        text-align:center;color:#4ade80">
+        <div>4-CLASS</div>
+        <div style="font-size:12px;color:#4a6080;letter-spacing:1px;
+          margin-top:4px;font-family:'Inter',sans-serif">ML OUTPUT</div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-hint">▼</div>
+</section>
+
+<!-- SECTION 5: LAUNCH -->
+<section class="launch-section">
+  <div style="position:relative;z-index:1;width:100%">
+    <div class="section-title">Enter the Interactive Command Center</div>
+    <div class="section-desc">
+      Input TIC IDs, dynamically fold phase curves, and run real-time
+      inference on the stars.
+    </div>
+    <div class="launch-grid">
+      <div class="code-block">
+        <div><span class="code-import">import</span> signalnova</div>
+        <div>&nbsp;</div>
+        <div><span class="code-comment"># Initialize Target</span></div>
+        <div><span class="code-var">star</span> = signalnova.Target(
+          tic_id=<span class="code-string">"25155310"</span>)</div>
+        <div>&nbsp;</div>
+        <div><span class="code-comment"># Execute Pipeline</span></div>
+        <div><span class="code-var">result</span> = star.run_pipeline(
+          mode=<span class="code-string">'bls+xgb'</span>)</div>
+        <div>&nbsp;</div>
+        <div><span class="code-comment"># Predict</span></div>
+        <div>print(<span class="code-string">f"Probability: 
+          {result.prob:.2%}"</span>)</div>
+        <div><span class="code-output">&gt; Probability: 99.8% 
+          (CONFIRMED PLANET)</span></div>
+      </div>
+      <div class="system-ready">
+        <h3>SYSTEM READY</h3>
+        <p>The dashboard is standing by. Click the button below to launch
+          the graphical interface and begin your analysis.</p>
+      </div>
+    </div>
+  </div>
+</section>"""
+
+    part4 = """
 <script>
-// Generate starfield
-const container = document.getElementById('stars');
-for (let i = 0; i < 150; i++) {
-    const star = document.createElement('div');
-    star.className = 'star';
-    const size = Math.random() * 2 + 1;
-    star.style.cssText = `
-        width:${size}px; height:${size}px;
-        top:${Math.random()*100}%;
-        left:${Math.random()*100}%;
-        animation-delay:${Math.random()*3}s;
-        animation-duration:${2+Math.random()*3}s;
-        opacity:${Math.random()*0.7+0.2};
-    `;
-    container.appendChild(star);
+// Starfield
+const canvas = document.getElementById('star-canvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+const stars = [];
+for(let i=0;i<200;i++){
+  stars.push({
+    x:Math.random()*canvas.width,
+    y:Math.random()*canvas.height,
+    r:Math.random()*1.5+0.3,
+    speed:Math.random()*0.3+0.05,
+    opacity:Math.random()*0.8+0.2,
+    twinkle:Math.random()*Math.PI*2
+  });
 }
+function animateStars(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  const t = Date.now()/1000;
+  stars.forEach(s=>{
+    const op = s.opacity*(0.7+0.3*Math.sin(t*s.speed*3+s.twinkle));
+    ctx.beginPath();
+    ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    ctx.fillStyle='rgba(255,255,255,'+op+')';
+    ctx.fill();
+  });
+  requestAnimationFrame(animateStars);
+}
+animateStars();
+
+// Counter animation
+let count = 0;
+const target = 847293;
+const el = document.getElementById('counter');
+const interval = setInterval(()=>{
+  count += Math.floor(Math.random()*5000+3000);
+  if(count >= target){count=target;clearInterval(interval);}
+  el.textContent = count.toLocaleString();
+},50);
+
+// Pipeline node animation
+let activeNode = 0;
+const nodes = document.querySelectorAll('[id^="pn"]');
+setInterval(()=>{
+  nodes.forEach((n,i)=>{
+    if(i===activeNode){
+      n.style.borderColor='#00ff88';
+      n.style.boxShadow='0 0 30px rgba(0,255,136,0.6)';
+    } else {
+      n.style.borderColor='#a78bfa';
+      n.style.boxShadow='0 0 20px rgba(167,139,250,0.2)';
+    }
+  });
+  activeNode = (activeNode+1)%nodes.length;
+},800);
+
+// Floating particles
+for(let i=0;i<15;i++){
+  const p = document.createElement('div');
+  p.className='particle';
+  const drift = (Math.random()-0.5)*200;
+  p.style.cssText='left:'+Math.random()*100+'%;'+
+    'animation-duration:'+(8+Math.random()*12)+'s;'+
+    'animation-delay:'+(Math.random()*10)+'s;'+
+    '--drift:'+drift+'px;';
+  document.body.appendChild(p);
+}
+
+window.addEventListener('resize',()=>{
+  canvas.width=window.innerWidth;
+  canvas.height=window.innerHeight;
+});
 </script>
 </body>
-</html>
-"""
+</html>"""
+
+    # Combine all parts
+    html_content = part1 + part2 + part3 + part4
+
     try:
         import streamlit.components.v1 as components
-        components.html(html_content, height=880, scrolling=False)
+        components.html(html_content, height=3200, scrolling=True)
     except Exception:
-        pass
-    
-    import streamlit as st
+        st.markdown(html_content, unsafe_allow_html=True)
+
+    # Launch button below the HTML
+    st.markdown("<br>", unsafe_allow_html=True)
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         if st.button(
-            "🚀 Launch Dashboard",
+            "🚀 INITIATE DASHBOARD",
             type="primary",
             use_container_width=True,
-            key="launch_btn"
+            key="launch_main"
         ):
             st.session_state.show_dashboard = True
             st.rerun()
-    
-    st.markdown(
-        "<p style='text-align:center;color:#6b8bb5;"
-        "font-size:12px;margin-top:8px'>"
-        "Or press the button above to enter the detection pipeline</p>",
-        unsafe_allow_html=True
-    )

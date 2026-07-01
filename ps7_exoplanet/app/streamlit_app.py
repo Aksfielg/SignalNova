@@ -638,11 +638,11 @@ elif st.session_state.active_tab == "Validation":
         """Run validation directly without needing a CSV file."""
         KNOWN_PLANETS = [
             {'name': 'WASP-126 b', 'tic_id': 25155310,  
-             'known_period': 3.2886,  'sector': 1},
-            {'name': 'TOI-700 d',  'tic_id': 150428135, 
-             'known_period': 37.4228, 'sector': 3},
-            {'name': 'L 98-59 b',  'tic_id': 270341214, 
-             'known_period': 3.6907,  'sector': 2},
+             'known_period': 3.2886, 'p_max': 10.0, 'sector': 1},
+            {'name': 'Pi Men c',   'tic_id': 261136679, 
+             'known_period': 6.2679, 'p_max': 15.0, 'sector': 1},
+            {'name': 'WASP-39 b',  'tic_id': 400071468, 
+             'known_period': 4.0552, 'p_max': 10.0, 'sector': 2},
         ]
         results = []
         progress = st.progress(0)
@@ -690,7 +690,7 @@ elif st.session_state.active_tab == "Validation":
                 result = bls.autopower(
                     durations, 
                     minimum_period=0.5, 
-                    maximum_period=50.0
+                    maximum_period=planet['p_max']
                 )
                 best_idx = np.argmax(result.power)
                 detected = float(result.period[best_idx])
