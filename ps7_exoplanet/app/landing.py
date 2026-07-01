@@ -2,58 +2,90 @@ import streamlit as st
 
 def render_landing():
     # --- STICKY HEADER ---
-    header_container = st.container()
-    with header_container:
-        st.markdown("""
-            <style>
-            /* Hide default Streamlit header */
-            header[data-testid="stHeader"] {
-                display: none !important;
-            }
-            /* Make the main block relative so we can pad it */
-            .block-container {
-                padding-top: 70px !important; 
-                padding-bottom: 0px !important;
-            }
-            /* Target the first container and make it sticky */
-            section.main .block-container > div[data-testid="stVerticalBlock"] > div:first-child {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                background: rgba(10, 14, 26, 0.95);
-                backdrop-filter: blur(10px);
-                z-index: 999999;
-                padding: 15px 40px;
-                border-bottom: 1px solid rgba(255,255,255,0.1);
-                box-shadow: 0 4px 30px rgba(0,0,0,0.5);
-            }
-            /* Fix skip button styling */
-            section.main .block-container > div[data-testid="stVerticalBlock"] > div:first-child button {
-                background-color: #378ADD !important;
-                color: white !important;
-                border-radius: 30px !important;
-                border: none !important;
-                box-shadow: 0 0 15px rgba(55,138,221,0.4) !important;
-                font-family: 'Orbitron', monospace !important;
-                font-weight: 700 !important;
-                letter-spacing: 2px !important;
-                padding: 10px 24px !important;
-                transition: all 0.3s ease !important;
-            }
-            section.main .block-container > div[data-testid="stVerticalBlock"] > div:first-child button:hover {
-                transform: scale(1.05) !important;
-                box-shadow: 0 0 25px rgba(55,138,221,0.7) !important;
-            }
-            </style>
-        """, unsafe_allow_html=True)
-        col1, col2, col3 = st.columns([1, 6, 2])
-        with col2:
-            st.markdown('<div style="font-family:\'Orbitron\',monospace; font-size:24px; font-weight:900; color:#fff; padding-top:5px; letter-spacing:4px;">SIGNAL<span style="color:#a78bfa">NOVA</span></div>', unsafe_allow_html=True)
-        with col3:
-            if st.button("SKIP INTRO ⏭", key="skip_intro", use_container_width=True):
-                st.session_state.show_dashboard = True
-                st.rerun()
+    st.markdown("""
+        <style>
+        /* Hide default Streamlit header */
+        header[data-testid="stHeader"] {
+            display: none !important;
+        }
+        /* Make the main block relative so we can pad it */
+        .block-container {
+            padding-top: 100px !important; 
+            padding-bottom: 0px !important;
+        }
+        
+        /* 1. Float the visual header background and logo */
+        .floating-header {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 70px;
+            background: rgba(15, 20, 35, 0.7);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            z-index: 999998;
+            border-radius: 50px;
+            border: 1px solid rgba(255,255,255,0.05);
+            border-top: 1px solid rgba(255,255,255,0.15);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            padding: 0 40px;
+        }
+        .header-logo {
+            font-family: 'Orbitron', monospace;
+            font-size: 22px;
+            font-weight: 900;
+            color: #fff;
+            letter-spacing: 4px;
+        }
+        .header-logo span { color: #a78bfa; }
+        
+        /* 2. Float the Streamlit button */
+        section.main .block-container div[data-testid="stButton"]:first-of-type {
+            position: fixed !important;
+            top: 35px !important;
+            right: calc(20% + 20px) !important;
+            z-index: 999999 !important;
+            width: auto !important;
+        }
+        
+        section.main .block-container div[data-testid="stButton"]:first-of-type button {
+            background-color: #378ADD !important;
+            color: white !important;
+            border-radius: 30px !important;
+            border: none !important;
+            box-shadow: 0 0 15px rgba(55,138,221,0.4) !important;
+            font-family: 'Orbitron', monospace !important;
+            font-weight: 700 !important;
+            letter-spacing: 2px !important;
+            padding: 8px 24px !important;
+            transition: all 0.3s ease !important;
+            height: 40px !important;
+            min-height: 40px !important;
+            line-height: 1 !important;
+        }
+        section.main .block-container div[data-testid="stButton"]:first-of-type button:hover {
+            transform: scale(1.05) !important;
+            box-shadow: 0 0 25px rgba(55,138,221,0.7) !important;
+        }
+        
+        @media (max-width: 900px) {
+            .floating-header { width: 90%; }
+            section.main .block-container div[data-testid="stButton"]:first-of-type { right: calc(5% + 10px) !important; }
+        }
+        </style>
+        
+        <div class="floating-header">
+            <div class="header-logo">SIGNAL<span>NOVA</span></div>
+        </div>
+    """, unsafe_allow_html=True)
+
+    if st.button("SKIP INTRO ⏭", key="skip_intro"):
+        st.session_state.show_dashboard = True
+        st.rerun()
 
     # Split into parts to avoid triple-quote truncation issues
     part1 = """<!DOCTYPE html>
