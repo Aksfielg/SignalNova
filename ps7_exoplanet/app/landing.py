@@ -21,7 +21,7 @@ def render_landing():
             left: 50%;
             transform: translateX(-50%);
             width: 60%;
-            height: 70px;
+            height: 40px;
             background: rgba(15, 20, 35, 0.7);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
@@ -32,27 +32,30 @@ def render_landing():
             box-shadow: 0 10px 40px rgba(0,0,0,0.6);
             display: flex;
             align-items: center;
-            padding: 0 40px;
+            padding: 0 25px;
         }
         .header-logo {
             font-family: 'Orbitron', monospace;
-            font-size: 22px;
+            font-size: 16px;
             font-weight: 900;
             color: #fff;
             letter-spacing: 4px;
+            margin-top: 2px;
         }
         .header-logo span { color: #a78bfa; }
         
         /* 2. Float the Streamlit button */
-        section.main .block-container div[data-testid="stButton"]:first-of-type {
+        /* Use :has() to target the element-container immediately following the header */
+        div.element-container:has(.floating-header) + div.element-container {
             position: fixed !important;
-            top: 35px !important;
-            right: calc(20% + 20px) !important;
+            top: 26px !important;
+            right: calc(20% + 15px) !important;
             z-index: 999999 !important;
             width: auto !important;
+            display: block !important;
         }
         
-        section.main .block-container div[data-testid="stButton"]:first-of-type button {
+        div.element-container:has(.floating-header) + div.element-container button {
             background-color: #378ADD !important;
             color: white !important;
             border-radius: 30px !important;
@@ -60,21 +63,22 @@ def render_landing():
             box-shadow: 0 0 15px rgba(55,138,221,0.4) !important;
             font-family: 'Orbitron', monospace !important;
             font-weight: 700 !important;
-            letter-spacing: 2px !important;
-            padding: 8px 24px !important;
+            letter-spacing: 1px !important;
+            padding: 2px 14px !important;
             transition: all 0.3s ease !important;
-            height: 40px !important;
-            min-height: 40px !important;
+            height: 28px !important;
+            min-height: 28px !important;
             line-height: 1 !important;
+            font-size: 11px !important;
         }
-        section.main .block-container div[data-testid="stButton"]:first-of-type button:hover {
+        div.element-container:has(.floating-header) + div.element-container button:hover {
             transform: scale(1.05) !important;
             box-shadow: 0 0 25px rgba(55,138,221,0.7) !important;
         }
         
         @media (max-width: 900px) {
             .floating-header { width: 90%; }
-            section.main .block-container div[data-testid="stButton"]:first-of-type { right: calc(5% + 10px) !important; }
+            div.element-container:has(.floating-header) + div.element-container { right: calc(5% + 15px) !important; }
         }
         </style>
         
