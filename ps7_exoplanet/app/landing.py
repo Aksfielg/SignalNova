@@ -4,8 +4,6 @@ os.chdir(root)
 sys.path.insert(0, os.path.join(root, 'ps7_exoplanet', 'src'))
 
 import streamlit as st
-import streamlit.components.v1 as components
-
 def render_landing():
     # Hide Streamlit's default padding and float our launch button as a pill
     st.markdown("""
@@ -428,10 +426,11 @@ def render_landing():
         </script>
     </body>
     </html>
-    """
-    
-    # Render with scrolling enabled and fixed height for smooth native scroll inside iframe
-    components.html(html_content, height=900, scrolling=True)
+    try:
+        import streamlit.components.v1 as components
+        components.html(html_content, height=900, scrolling=True)
+    except Exception:
+        st.markdown(html_content, unsafe_allow_html=True)
     
     # Empty container to anchor the button correctly
     st.container()

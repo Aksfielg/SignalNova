@@ -588,42 +588,155 @@ elif st.session_state.active_tab == "Batch scan":
                                use_container_width=True)
 
 elif st.session_state.active_tab == "Validation":
-    st.markdown("### Validation against NASA-confirmed TESS exoplanets")
-    st.markdown("These are stars with independently confirmed planets from the "
-                "NASA Exoplanet Archive. We run our pipeline on their TESS light "
-                "curves and compare detected periods to published values.")
+    def run_validation_inline(sector=1):
+        """Run validation directly without needing a CSV file."""
+        KNOWN_PLANETS = [
+            {'name': 'WASP-126 b', 'tic_id': 25155310,  
+             'known_period': 3.2886,  'sector': 1},
+            {'name': 'TOI-700 d',  'tic_id': 150428135, 
+             'known_period': 37.4228, 'sector': 3},
+            {'name': 'L 98-59 b',  'tic_id': 270341214, 
+             'known_period': 3.6907,  'sector': 2},
+        ]
+        results = []
+        progress = st.progress(0)
+        status_text = st.empty()
+        
+        for i, planet in enumerate(KNOWN_PLANETS):
+            status_text.text(f"Validating {planet['name']}...")
+            progress.progress((i) / len(KNOWN_PLANETS))
+            try:
+                import lightkurve as lk
+                from astropy.timeseries import BoxLeastSquares
+                
+                # Try multiple sectors
+                lc_obj = None
+                for sec in [planet['sector'], 1, 2, 3, 4, 5]:
+                    try:
+                        search = lk.search_lightcurve(
+                            f"TIC {planet['tic_id']}", 
+                            sector=sec, cadence="short", author="SPOC"
+                        )
+                        if len(search) > 0:
+                            lc_obj = search[0].download()
+                            break
+                    except:
+                        continue
+                
+                if lc_obj is None:
+                    results.append({
+                        'Planet': planet['name'],
+                        'TIC ID': planet['tic_id'],
+                        'Known period (d)': planet['known_period'],
+                        'Detected (d)': 'N/A',
+                        'Error %': 'N/A',
+                        'Status': 'NO DATA'
+                    })
+                    continue
+                
+                lc_obj = lc_obj.remove_nans().remove_outliers(
+                    sigma=4).flatten(window_length=401).normalize()
+                time = lc_obj.time.value
+                flux = lc_obj.flux.value
+                
+                bls = BoxLeastSquares(time, flux)
+                durations = np.linspace(0.05, 0.3, 15)
+                result = bls.autopower(
+                    durations, 
+                    minimum_period=0.5, 
+                    maximum_period=50.0
+                )
+                best_idx = np.argmax(result.power)
+                detected = float(result.period[best_idx])
+                known = planet['known_period']
+                err_pct = abs(detected - known) / known * 100
+                status = 'PASS' if err_pct < 2.0 else 'FAIL'
+                
+                results.append({
+                    'Planet': planet['name'],
+                    'TIC ID': planet['tic_id'],
+                    'Known period (d)': known,
+                    'Detected (d)': round(detected, 4),
+                    'Error %': round(err_pct, 4),
+                    'Status': status
+                })
+            except Exception as e:
+                results.append({
+                    'Planet': planet['name'],
+                    'TIC ID': planet['tic_id'],
+                    'Known period (d)': planet['known_period'],
+                    'Detected (d)': 'ERROR',
+                    'Error %': str(e)[:40],
+                    'Status': 'ERROR'
+                })
+        
+        progress.progress(1.0)
+        status_text.text("Validation complete!")
+        return pd.DataFrame(results)
 
-    val_path = "data/processed/validation_results.csv"
-    if os.path.exists(val_path):
-        vdf = pd.read_csv(val_path)
-        vdf["Period match"] = vdf.apply(
-            lambda r: "✓ Excellent" if r.get("Error %", 100) < 0.1
-            else ("✓ Good" if r.get("Error %", 100) < 1.0
-            else ("~ Acceptable" if r.get("Error %", 100) < 5.0
-            else "✗ Poor (multi-sector needed)")), axis=1
-        )
-        st.dataframe(vdf, use_container_width=True, hide_index=True)
-        passed = (vdf["Status"] == "PASS").sum() if "Status" in vdf.columns else 0
-        st.metric("Planets recovered correctly", f"{passed}/{len(vdf)}")
-        st.caption(
-            "Note: Long-period planets (>27 days) cannot be recovered from a single "
-            "27-day TESS sector. This is a data coverage constraint, not a pipeline flaw."
-        )
+    st.markdown("## Validation against NASA-confirmed TESS exoplanets")
+    st.write("These are stars with independently confirmed planets. We run "
+             "our pipeline and compare detected periods to published values.")
+
+    if st.button("▶ Run validation on known planets"):
+        with st.spinner("Running validation — downloading TESS data..."):
+            val_df = run_validation_inline()
+        
+        passed = (val_df['Status'] == 'PASS').sum()
+        total = len(val_df)
+        
+        if passed == total:
+            st.success(f"✅ {passed} / {total} planets recovered correctly")
+        else:
+            st.warning(f"⚠️ {passed} / {total} planets recovered correctly")
+        
+        def color_status(val):
+            if val == 'PASS':
+                return 'color: #4ade80; font-weight: bold'
+            elif val == 'FAIL':
+                return 'color: #f87171; font-weight: bold'
+            return 'color: #9ca3af'
+        
+        styled = val_df.style.applymap(color_status, subset=['Status'])
+        st.dataframe(styled, use_container_width=True, hide_index=True)
+        
+        # Save for PDF
+        st.session_state['validation_results'] = val_df
     else:
-        st.info("Run python src/07_validate.py first to generate validation results.")
+        st.info("Click the button above to run live validation against "
+                "NASA-confirmed TESS exoplanets.")
 
 elif st.session_state.active_tab == "Catalog":
-    st.markdown("### Processed star catalog")
-    bls_path = "data/processed/bls_results.csv"
-    if os.path.exists(bls_path):
-        bdf = pd.read_csv(bls_path)
-        display_cols = ["tic_id","best_period_days","transit_depth_ppm",
-                        "transit_duration_hours","snr","dip_symmetry",
-                        "above_snr_threshold","crowding_risk"]
-        available = [c for c in display_cols if c in bdf.columns]
-        st.dataframe(bdf[available], use_container_width=True, hide_index=True)
-        st.metric("Stars analyzed", len(bdf))
-        above = bdf["above_snr_threshold"].sum() if "above_snr_threshold" in bdf.columns else 0
-        st.metric("Candidates above SNR threshold", int(above))
-    else:
-        st.info("Run python src/03_bls_search.py first to populate the catalog.")
+    st.markdown("## Reference planet catalog")
+    st.write("Known TESS exoplanets used for validation and testing.")
+
+    catalog_data = {
+        'Planet': ['WASP-126 b','TOI-700 d','WASP-39 b',
+                   'L 98-59 b','Pi Men c','HD 21749 b'],
+        'TIC ID': [25155310, 150428135, 400071468,
+                   270341214, 261136679, 307210830],
+        'Period (days)': [3.2886, 37.4228, 4.0552,
+                          3.6907, 6.2679, 35.6133],
+        'Depth (ppm)': [14700, 2280, 22500, 500, 176, 630],
+        'Type': ['Hot Jupiter','Super-Earth','Hot Jupiter',
+                 'Rocky','Mini-Neptune','Sub-Neptune'],
+        'Best sector': [1, 3, 2, 2, 1, 1],
+    }
+    cat_df = pd.DataFrame(catalog_data)
+    st.dataframe(cat_df, use_container_width=True, hide_index=True)
+
+    st.markdown("### Quick analyze")
+    st.write("Click a planet to analyze it in the Single star tab:")
+
+    cols = st.columns(3)
+    for i, (name, tic, sec) in enumerate(zip(
+        catalog_data['Planet'], 
+        catalog_data['TIC ID'],
+        catalog_data['Best sector']
+    )):
+        col = cols[i % 3]
+        if col.button(f"🔭 {name}", key=f"cat_{tic}", 
+                      use_container_width=True):
+            st.session_state['target_tic'] = str(tic)
+            st.session_state['active_tab'] = "Single star"
+            st.rerun()

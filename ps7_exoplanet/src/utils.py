@@ -1,4 +1,8 @@
 import numpy as np
+# numpy 2.0 compatibility
+if not hasattr(np, 'trapz'):
+    np.trapz = np.trapezoid
+
 import pandas as pd
 from scipy import stats
 from scipy.ndimage import median_filter
