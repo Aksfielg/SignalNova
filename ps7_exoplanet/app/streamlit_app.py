@@ -1,3 +1,21 @@
+import os, sys
+
+# Auto-fix working directory so all relative paths work on cloud
+root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+os.chdir(root)
+sys.path.insert(0, os.path.join(root, 'ps7_exoplanet', 'src'))
+
+# Create required folders if they don't exist (cloud has no persistent disk)
+for _dir in [
+    "ps7_exoplanet/data/raw",
+    "ps7_exoplanet/data/processed",
+    "ps7_exoplanet/data/processed/star_reports",
+    "ps7_exoplanet/data/labeled",
+    "ps7_exoplanet/models",
+    "ps7_exoplanet/report",
+]:
+    os.makedirs(_dir, exist_ok=True)
+
 import streamlit as st
 import numpy as np
 import pandas as pd
@@ -5,10 +23,47 @@ import plotly.graph_objects as go
 import lightkurve as lk
 from astropy.timeseries import BoxLeastSquares
 import joblib
-import os
-import sys
+from io import BytesIO
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
+def generate_pdf_bytes(result=None):
+    """Generate PDF report in memory without writing to disk."""
+    buffer = BytesIO()
+    try:
+        sys.path.insert(0, os.path.join(root, 'ps7_exoplanet', 'report'))
+        # Try importing the report generator
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(
+            "generate_report", 
+            os.path.join(root, "ps7_exoplanet/report/generate_report.py")
+        )
+        mod = importlib.util.load_from_spec(spec)
+        spec.loader.exec_module(mod)
+        # Build to file then read it back
+        mod.build()
+        pdf_path = os.path.join(root, "ps7_exoplanet/report/PS7_Exoplanet_Report.pdf")
+        if os.path.exists(pdf_path):
+            with open(pdf_path, "rb") as f:
+                return f.read()
+    except Exception as e:
+        # Fallback: generate a minimal PDF if report module fails
+        from reportlab.platypus import SimpleDocTemplate, Paragraph
+        from reportlab.lib.styles import getSampleStyleSheet
+        from reportlab.lib.pagesizes import A4
+        doc = SimpleDocTemplate(buffer, pagesize=A4)
+        styles = getSampleStyleSheet()
+        story = [
+            Paragraph("PS7 Exoplanet Detection Report", styles['Title']),
+            Paragraph("ISRO Bharatiya Antariksh Hackathon 2026", styles['Normal']),
+        ]
+        if result:
+            story.append(Paragraph(f"TIC ID: {result.get('tic_id','N/A')}", styles['Normal']))
+            story.append(Paragraph(f"Period: {result.get('period',0):.4f} days", styles['Normal']))
+            story.append(Paragraph(f"Classification: {result.get('pred_class','N/A')}", styles['Normal']))
+        doc.build(story)
+        buffer.seek(0)
+        return buffer.getvalue()
+    return b""
+
 from utils import (preprocess_lightcurve_simple, compute_flux_stats,
     phase_fold, bin_light_curve,
     check_secondary_eclipse, check_odd_even_depths,
@@ -299,6 +354,9 @@ if st.session_state.active_tab == "Single star":
             if err:
                 st.error(err)
             elif res:
+                st.session_state['last_result'] = res
+                res['tic_id'] = tic_input
+                
                 c_cls = res['pred_class'].lower()
                 cls_color = "bg-planet" if c_cls == "planet" else "bg-eb" if c_cls == "eb" else "bg-blend" if c_cls == "blend" else "bg-other"
                 icon = "🌍" if c_cls=="planet" else "⭐" if c_cls=="eb" else "⚠️" if c_cls=="blend" else "❓"
@@ -464,39 +522,21 @@ if st.session_state.active_tab == "Single star":
                         file_name=f"tic_{tic_input}_result.csv", mime="text/csv", use_container_width=True
                     )
                     
-                    if st.button("Generate PDF report", use_container_width=True):
-                        with st.spinner("Generating report..."):
-                            df_for_pdf = df_export.copy()
-                            df_for_pdf.rename(columns={'period_days': 'best_period_days', 'depth_ppm': 'transit_depth_ppm', 'duration_hrs': 'transit_duration_hours'}, inplace=True)
-                            df_for_pdf['above_snr_threshold'] = 1 if res['snr'] > snr_thresh else 0
-                            processed_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'data', 'processed'))
-                            os.makedirs(processed_dir, exist_ok=True)
-                            df_for_pdf.to_csv(os.path.join(processed_dir, 'bls_results.csv'), index=False)
-                            
-                            import sys
-                            report_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'report'))
-                            if report_dir not in sys.path:
-                                sys.path.insert(0, report_dir)
-                            
-                            try:
-                                import importlib
-                                import generate_report
-                                importlib.reload(generate_report)
-                                generate_report.build()
-                            except Exception as e:
-                                st.error(f"Error generating PDF: {e}")
-                            
-                            pdf_path = os.path.join(report_dir, 'PS7_Exoplanet_Report.pdf')
-                            if os.path.exists(pdf_path):
-                                with open(pdf_path, "rb") as f:
-                                    st.session_state.pdf_bytes = f.read()
-
-                    if 'pdf_bytes' in st.session_state:
-                        st.download_button(
-                            "Click to download PDF", st.session_state.pdf_bytes, 
-                            file_name="PS7_Exoplanet_Report.pdf", 
-                            mime="application/pdf", use_container_width=True
-                        )
+                    if st.sidebar.button("📄 Download PDF report"):
+                        with st.spinner("Generating PDF..."):
+                            pdf_data = generate_pdf_bytes(
+                                result=st.session_state.get('last_result', None)
+                            )
+                        if pdf_data:
+                            st.sidebar.download_button(
+                                label="📥 Click to download PDF",
+                                data=pdf_data,
+                                file_name="PS7_Exoplanet_Report.pdf",
+                                mime="application/pdf",
+                                key="pdf_dl"
+                            )
+                        else:
+                            st.sidebar.error("PDF generation failed.")
 
 elif st.session_state.active_tab == "Batch scan":
     st.markdown("### Batch scan — run pipeline on multiple stars")

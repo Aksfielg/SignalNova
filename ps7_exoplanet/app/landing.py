@@ -1,3 +1,8 @@
+import os, sys
+root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+os.chdir(root)
+sys.path.insert(0, os.path.join(root, 'ps7_exoplanet', 'src'))
+
 import streamlit as st
 import streamlit.components.v1 as components
 

@@ -1,0 +1,14 @@
+lightkurve
+astropy
+xgboost
+scikit-learn
+plotly
+streamlit
+numpy
+pandas
+matplotlib
+scipy
+reportlab
+shap
+joblib
+astroquery
