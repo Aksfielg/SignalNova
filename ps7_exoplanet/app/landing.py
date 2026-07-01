@@ -1,6 +1,60 @@
 import streamlit as st
 
 def render_landing():
+    # --- STICKY HEADER ---
+    header_container = st.container()
+    with header_container:
+        st.markdown("""
+            <style>
+            /* Hide default Streamlit header */
+            header[data-testid="stHeader"] {
+                display: none !important;
+            }
+            /* Make the main block relative so we can pad it */
+            .block-container {
+                padding-top: 70px !important; 
+                padding-bottom: 0px !important;
+            }
+            /* Target the first container and make it sticky */
+            section.main .block-container > div[data-testid="stVerticalBlock"] > div:first-child {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                background: rgba(10, 14, 26, 0.95);
+                backdrop-filter: blur(10px);
+                z-index: 999999;
+                padding: 15px 40px;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+                box-shadow: 0 4px 30px rgba(0,0,0,0.5);
+            }
+            /* Fix skip button styling */
+            section.main .block-container > div[data-testid="stVerticalBlock"] > div:first-child button {
+                background-color: #378ADD !important;
+                color: white !important;
+                border-radius: 30px !important;
+                border: none !important;
+                box-shadow: 0 0 15px rgba(55,138,221,0.4) !important;
+                font-family: 'Orbitron', monospace !important;
+                font-weight: 700 !important;
+                letter-spacing: 2px !important;
+                padding: 10px 24px !important;
+                transition: all 0.3s ease !important;
+            }
+            section.main .block-container > div[data-testid="stVerticalBlock"] > div:first-child button:hover {
+                transform: scale(1.05) !important;
+                box-shadow: 0 0 25px rgba(55,138,221,0.7) !important;
+            }
+            </style>
+        """, unsafe_allow_html=True)
+        col1, col2, col3 = st.columns([1, 6, 2])
+        with col2:
+            st.markdown('<div style="font-family:\'Orbitron\',monospace; font-size:24px; font-weight:900; color:#fff; padding-top:5px; letter-spacing:4px;">SIGNAL<span style="color:#a78bfa">NOVA</span></div>', unsafe_allow_html=True)
+        with col3:
+            if st.button("SKIP INTRO ⏭", key="skip_intro", use_container_width=True):
+                st.session_state.show_dashboard = True
+                st.rerun()
+
     # Split into parts to avoid triple-quote truncation issues
     part1 = """<!DOCTYPE html>
 <html lang="en">
@@ -511,12 +565,11 @@ window.addEventListener('resize',()=>{
 
     try:
         import streamlit.components.v1 as components
-        components.html(html_content, height=3400, scrolling=False)
+        components.html(html_content, height=3300, scrolling=False)
     except Exception:
         st.markdown(html_content, unsafe_allow_html=True)
 
-    # Launch button below the HTML
-    st.markdown("<br>", unsafe_allow_html=True)
+    # Launch button smoothly integrated above footer
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         if st.button(
